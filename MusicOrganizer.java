@@ -15,6 +15,8 @@ public class MusicOrganizer
     private MusicPlayer player;
     // A reader that can read music files and load them as tracks.
     private TrackReader reader;
+    // Atributo que nos indica si se esta reproduciendo musica o no
+    private boolean reproducir;
 
     /**
      * Create a MusicOrganizer
@@ -24,6 +26,7 @@ public class MusicOrganizer
         tracks = new ArrayList<Track>();
         player = new MusicPlayer();
         reader = new TrackReader();
+        reproducir = false;
         readLibrary("audio");
         System.out.println("Music library loaded. " + getNumberOfTracks() + " tracks.");
         System.out.println();
@@ -53,11 +56,17 @@ public class MusicOrganizer
      */
     public void playTrack(int index)
     {
-        if(indexValid(index)) {
-            Track track = tracks.get(index);
-            track.incrementarPlayCount();
-            player.startPlaying(track.getFilename());
-            System.out.println("Now playing: " + track.getArtist() + " - " + track.getTitle());
+        if (reproducir) {
+            System.out.println("Hay una reproduccion en curso.");
+        }
+        else{
+            if(indexValid(index)) {
+                Track track = tracks.get(index);
+                track.incrementarPlayCount();
+                player.startPlaying(track.getFilename());
+                reproducir = true;
+                System.out.println("Now playing: " + track.getArtist() + " - " + track.getTitle());
+            }
         }
     }
 
@@ -123,9 +132,16 @@ public class MusicOrganizer
      */
     public void playFirst()
     {
-        if(tracks.size() > 0) {
-            player.startPlaying(tracks.get(0).getFilename());
+        if (reproducir) {
+            System.out.println("Hay una reproduccion en curso");
         }
+        else {
+            if(tracks.size() > 0) {
+                player.startPlaying(tracks.get(0).getFilename());
+                reproducir = true;
+            }
+        }
+
     }
 
     /**
@@ -134,6 +150,7 @@ public class MusicOrganizer
     public void stopPlaying()
     {
         player.stop();
+        reproducir = false;
     }
 
     /**
@@ -184,6 +201,16 @@ public class MusicOrganizer
             if (actualTitulo.contains(titulo)){
                 System.out.println(track.getDetails());
             }
+        }
+    }
+
+    public void isPlaying()
+    {
+        if (reproducir){
+            System.out.println("Hay una reproduccion en curso.");
+        }
+        else {
+            System.out.println("No hay nada en reproduccion.");
         }
     }
 }
